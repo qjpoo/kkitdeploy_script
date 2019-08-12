@@ -212,7 +212,7 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
-	yum -y install kubelet-1.14.1 kubeadm-1.14.1 kubectl-1.14.1 kubernetes-cni-0.7.5
+	yum -y install kubelet-1.15.1 kubeadm-1.15.1 kubectl-1.15.1 kubernetes-cni-0.7.5
 	yum list installed | grep kube
 	systemctl daemon-reload
 	systemctl enable kubelet
@@ -226,10 +226,10 @@ install_masterk8s(){
         pause:3.1
         )
 	for imagename in ${images[@]}; do
-	docker pull mirrorgooglecontainers/$imagename
-	docker tag mirrorgooglecontainers/$imagename k8s.gcr.io/$imagename
-	docker rmi mirrorgooglecontainers/$imagename
-	done
+	docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/$imagename
+	docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/$imagename k8s.gcr.io/$imagename
+	docker rmi registry.cn-hangzhou.aliyuncs.com/google_containers/$imagename
+	done           
 	docker pull registry.cn-hangzhou.aliyuncs.com/openthings/k8s-gcr-io-coredns:1.3.1
 	docker tag registry.cn-hangzhou.aliyuncs.com/openthings/k8s-gcr-io-coredns:1.3.1 k8s.gcr.io/coredns:1.3.1
 	docker rmi registry.cn-hangzhou.aliyuncs.com/openthings/k8s-gcr-io-coredns:1.3.1
