@@ -13,7 +13,7 @@ fi
 #fsize=2000000
 #exec 2>>$log  #如果执行过程中有错误信息均输出到日志文件中
 
-echo -e "\033[31m 安装资产管理系统！欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！ \033[0m"
+echo -e "\033[31m 安装jenkins！欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！ \033[0m"
 sleep 5
 #yum update
 yum_update(){
@@ -174,7 +174,7 @@ fi
 }
 
 deploy(){
-/usr/local/bin/docker-compose -f ./mysql.yml up -d
+/usr/local/bin/docker-compose -f ./*.yml up -d
 }
 
 main(){
@@ -190,7 +190,7 @@ main(){
   install_docker_compace
   config_docker
   deploy
-  echo "mysql已经安装完毕，请登录相关服务器验收！"
+  echo $hostname" 已经安装完毕，请登录相关服务器验收！"
 
 }
 main
