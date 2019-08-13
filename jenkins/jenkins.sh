@@ -174,7 +174,7 @@ fi
 }
 
 deploy(){
-/usr/local/bin/docker-compose -f ./*.yml up -d
+/usr/local/bin/docker-compose -f ./mysql.yml up -d
 }
 
 main(){
