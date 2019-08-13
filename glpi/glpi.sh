@@ -174,7 +174,7 @@ fi
 }
 
 deploy_gipl(){
-/usr/local/bin/docker-compose -f ./glpi.yml up -d
+/usr/local/bin/docker-compose -f ./*.yml up -d
 }
 
 main(){
