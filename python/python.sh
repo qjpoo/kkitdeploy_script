@@ -178,14 +178,17 @@ done
 }
 
 install_python(){
+echo "开始安装python，您得等会。编译非常慢！！"
 cd $bash_path
 test -d /usr/local/python3 || mkdir -p /usr/local/python3
 tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
 make && make install 
+rm -rf /usr/local/python3/bin/python3
+rm -rf /usr/local/python3/bin/pip3
 ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
 ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
-
 }
+
 check_result(){
 which python3
 pip3 -V
@@ -205,7 +208,7 @@ main(){
   rootssh_trust
   download_packed
   install_python
-  check_result
+  # check_result
   echo "python-$version 安装完毕 "
 }
 main

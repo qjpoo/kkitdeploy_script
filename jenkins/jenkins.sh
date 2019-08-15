@@ -21,9 +21,7 @@ yum_update(){
 }
 #configure yum source
 yum_config(){
-
   yum install wget epel-release -y
-  
   if [[ $aliyun == "1" ]];then
   test -d /etc/yum.repos.d/bak/ || yum install wget epel-release -y && cd /etc/yum.repos.d/ && mkdir bak && mv -f *.repo bak/ && wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo && wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo && yum clean all && yum makecache
 
@@ -147,6 +145,21 @@ echo "docker已经安装完毕!!!"
 fi
 }
 
+install_maven(){
+test -d /usr/local/maven3 
+if [[ $? -eq 0 ]];then
+echo "mvn已经安装完毕!!!"
+else
+wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar zxf apache-maven-3.1.1-bin.tar.gz && mv apache-maven-3.1.1 /usr/local/maven3
+  cat >> /etc/profile << EOF
+    export M2_HOME=/usr/local/maven3
+    export PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
+EOF
+source /etc/profile
+mvn -v
+fi
+}
+
 install_docker_compace() {
 # test -f /usr/local/bin/docker-compose
 # if [[ $? -eq 0 ]];then
@@ -187,10 +200,10 @@ main(){
   ulimit_config
   change_hosts
   install_docker
+  install_maven
   install_docker_compace
   config_docker
   deploy
   echo $hostname" 已经安装完毕，请登录相关服务器验收！"
-
 }
 main

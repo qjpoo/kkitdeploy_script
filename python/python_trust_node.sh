@@ -14,7 +14,7 @@ log="./setup.log"  #操作日志存放路径
 fsize=2000000         
 exec 2>>$log  #如果执行过程中有错误信息均输出到日志文件中
 
-echo -e "\033[31m 这个是服务器互信脚本！Please continue to enter or ctrl+C to cancel \033[0m"
+echo -e "\033[31m 节点开始安装python！Please continue to enter or ctrl+C to cancel \033[0m"
 #sleep 5
 #yum update
 yum_update(){
@@ -133,14 +133,17 @@ done
 }
 
 install_python(){
+echo "开始安装python，您得等会。编译非常慢！！"
 cd $bash_path
 test -d /usr/local/python3 || mkdir -p /usr/local/python3
 tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
 make && make install 
+rm -rf /usr/local/python3/bin/python3
+rm -rf /usr/local/python3/bin/pip3
 ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
 ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
-
 }
+
 check_result(){
 which python3
 pip3 -V
@@ -161,7 +164,7 @@ if [[ $bothway == "1" ]];then
 fi
 download_packed
 install_python
-check_result
+# check_result
 }
 main > .setup.log 2>&1
 
