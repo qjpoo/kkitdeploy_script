@@ -163,6 +163,7 @@ cd $bash_path
 num=0
 while true ; do
 let num+=1
+echo "开始下载python安装包，您得等会。可能会很慢，您懂得！！"
 wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
 if [[ $? -eq 0 ]] ; then
 echo "安装包下载完毕！！！"
@@ -187,6 +188,7 @@ rm -rf /usr/local/python3/bin/python3
 rm -rf /usr/local/python3/bin/pip3
 ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
 ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
+echo "python-$version 安装完毕 "
 }
 
 check_result(){

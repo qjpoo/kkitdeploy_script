@@ -231,4 +231,4 @@ if [[ ${#hostip[*]} -gt 1 ]];then
 fi
 echo "docker和docker_compose已经安装完毕，请登录相关服务器验收！"
 }
-main > ./setup.log 2>&1
+main

@@ -200,4 +200,4 @@ if [[ $bothway == "1" ]];then
 fi
 echo "远端服务器配置完毕"
 }
-main
+main > ./setup.log 2>&1
