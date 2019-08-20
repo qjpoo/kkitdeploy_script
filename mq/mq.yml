@@ -1,0 +1,15 @@
+version: '2'
+services:
+  activemq:
+    hostname: myactivemq
+    image: webcenter/activemq
+    ports:
+      - 61617:61616
+      - 8162:8161
+      - 1883:1883
+    restart: always
+    volumes:
+      - ./data/activemq:/data/activemq
+    environment:
+      - RABBITMQ_DEFAULT_USER="admin"
+      - RABBITMQ_DEFAULT_PASS="admin"

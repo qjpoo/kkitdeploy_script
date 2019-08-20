@@ -148,16 +148,16 @@ fi
 }
 
 install_docker_compace() {
-# test -f /usr/local/bin/docker-compose
-# if [[ $? -eq 0 ]];then
-# echo "docker-compose 安装完毕!!"
-# else
+test -f /usr/local/bin/docker-compose
+if [[ $? -eq 0 ]];then
+echo "docker-compose 安装完毕!!"
+else
 rm -rf /usr/local/bin/docker-compose 
 curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose 
 docker-compose --version
 echo "docker-compose 安装完毕!!"
-# fi
+fi
 }
 
 # config docker
@@ -174,7 +174,8 @@ fi
 }
 
 deploy(){
-/usr/local/bin/docker-compose -f ./*.yml up -d
+cd $bash_path
+/usr/local/bin/docker-compose -f *.yml up -d
 }
 
 main(){
@@ -185,7 +186,9 @@ main(){
   iptables_config
   system_config
   ulimit_config
+  if [[ $changsHostname == "1" ]];then
   change_hosts
+  fi
   install_docker
   install_docker_compace
   config_docker

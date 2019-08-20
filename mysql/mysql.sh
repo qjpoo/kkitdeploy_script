@@ -174,7 +174,8 @@ fi
 }
 
 deploy(){
-/usr/local/bin/docker-compose -f ./*.yml up -d
+cd $bash_path
+/usr/local/bin/docker-compose -f *.yml up -d
 }
 
 main(){
@@ -185,7 +186,9 @@ main(){
   iptables_config
   system_config
   ulimit_config
+  if [[ $changsHostname == "1" ]];then
   change_hosts
+  fi
   install_docker
   install_docker_compace
   config_docker

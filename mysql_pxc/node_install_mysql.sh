@@ -159,6 +159,7 @@ sed -i "/^interface/c interface $interface" ./keepalived.conf
 sed -i "s/outport/$outport/g" ./chk_mysql.sh
 #sed -i "s/interface eth0/interface $interface/g" ./keepalived.conf
 mv /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf.bak
+rm -rf /etc/keepalived/keepalived.conf /etc/keepalived/chk_mysql.sh
 cp keepalived.conf chk_mysql.sh /etc/keepalived/
 chmod 644 /etc/keepalived/keepalived.conf
 fi

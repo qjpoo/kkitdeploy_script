@@ -164,7 +164,7 @@ num=0
 while true ; do
 let num+=1
 echo "开始下载python安装包，您得等会。可能会很慢，您懂得！！"
-wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
+test -f Python-$version.tgz || wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
 if [[ $? -eq 0 ]] ; then
 echo "安装包下载完毕！！！"
 break;
@@ -183,9 +183,9 @@ echo "开始安装python，您得等会。编译非常慢！！"
 cd $bash_path
 test -d /usr/local/python3 || mkdir -p /usr/local/python3
 tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
-make && make install 
-rm -rf /usr/local/python3/bin/python3
-rm -rf /usr/local/python3/bin/pip3
+make && make install
+rm -rf /usr/bin/python3
+rm -rf /usr/bin/pip3
 ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
 ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
 echo "python-$version 安装完毕 "
@@ -210,7 +210,7 @@ main(){
   rootssh_trust
   download_packed
   install_python
-  # check_result
+  check_result
   echo "python-$version 安装完毕 "
 }
 main
