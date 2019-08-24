@@ -2,7 +2,7 @@ version: '3'
 services:
   zabbix-mysql-server:
     container_name: zabbix-mysql-server
-    image: mysql
+    image: mysql:5.7.25
     network_mode: "bridge"
     restart: always
     ports:

@@ -1,0 +1,13 @@
+version: '3'
+services:
+  zabbix-mysql-server:
+    container_name: rabbitmq-haproxy
+    image: haproxy:latest
+    network_mode: "bridge"
+    restart: always
+    ports:
+      - "80:80"
+      - "5677:5677"
+      - "8001:8001"
+    #volumes:
+      #- ./conf.d/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro

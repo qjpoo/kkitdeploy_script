@@ -1,15 +1,15 @@
 version: '2'
 services:
   activemq:
-    hostname: myactivemq
-    image: webcenter/activemq
+    hostname: rabbitmq
+    image: rabbitmq
     ports:
-      - 61617:61616
-      - 8162:8161
-      - 1883:1883
+      - 5672:5672
+      - 15672:15672
     restart: always
     volumes:
-      - ./data/activemq:/data/activemq
+      - ./data/:/var/lib/rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER="admin"
-      - RABBITMQ_DEFAULT_PASS="admin"
+      - RABBITMQ_DEFAULT_VHOST="/"
+      #- RABBITMQ_DEFAULT_USER="admin"
+      #- RABBITMQ_DEFAULT_PASS="admin"
