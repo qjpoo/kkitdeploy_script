@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres:
+      restart: always
+      image: postgres:latest   // postgres 镜像
+      privileged: true  //解决权限
+      ports:
+        - 5432:5432  //映射端口号
+      environment:
+        POSTGRES_PASSWORD: "root123"  //密码
+        PGDATA: /var/lib/postgresql/data/pgdata //数据存储文件夹
+      volumes:
+        - /home/server/pg_data/data:/var/lib/postgresql/data/pgdata //将数据映射到对应的路径
