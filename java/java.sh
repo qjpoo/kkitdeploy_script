@@ -133,7 +133,7 @@ else
 echo '###########add key'
 expect ssh_trust_add.exp $root_passwd $host
 fi
-scp base.config hwclock_ntp.sh python_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp root@$host:/root && scp /etc/hosts root@$host:/etc/hosts && ssh root@$host "hostnamectl set-hostname $hostname$num" && ssh root@$host /root/hwclock_ntp.sh && ssh root@$host /root/python_trust_node.sh && ssh root@$host "rm -rf base.config hwclock_ntp.sh mutual_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp" && ssh root@$host "rm -rf base.config hwclock_ntp.sh python_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp"
+scp base.config hwclock_ntp.sh trust_node.sh ssh_trust_init.exp ssh_trust_add.exp root@$host:/root && scp /etc/hosts root@$host:/etc/hosts && ssh root@$host "hostnamectl set-hostname $hostname$num" && ssh root@$host /root/hwclock_ntp.sh && ssh root@$host /root/trust_node.sh && ssh root@$host "rm -rf base.config hwclock_ntp.sh mutual_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp" && ssh root@$host "rm -rf base.config hwclock_ntp.sh trust_node.sh ssh_trust_init.exp ssh_trust_add.exp"
 
 fi
 done
@@ -161,23 +161,31 @@ fi
 done
 }
 
-install_python(){
-echo "开始安装python，您得等会。编译非常慢！！"
+install_java(){
+echo "开始安装java，您得等会。编译非常慢！！"
 cd $bash_path
-test -d /usr/local/python3 || mkdir -p /usr/local/python3
-tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
-make && make install
-rm -rf /usr/bin/python3
-rm -rf /usr/bin/pip3
-ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
-ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
-echo "python-$version 安装完毕 "
+yum -y install java-$version-openjdk*
+echo "java-$version 安装完毕 "
+}
+
+install_maven(){
+test -d /usr/local/maven3 
+if [[ $? -eq 0 ]];then
+echo "mvn已经安装完毕!!!"
+else
+wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar zxf apache-maven-3.1.1-bin.tar.gz && mv apache-maven-3.1.1 /usr/local/maven3
+  cat >> /etc/profile << EOF
+    export M2_HOME=/usr/local/maven3
+    export PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
+EOF
+source /etc/profile
+mvn -v
+fi
 }
 
 check_result(){
 #which python3
-/usr/bin/pip3 -V
-/usr/bin/python3 -V
+`java -version`
 }
 
 
@@ -192,9 +200,14 @@ main(){
   change_hosts
   rootssh_trust
   download_packed
-  install_python
+  if [[ $java == "1" ]];then
+  install_java
+  fi
+  if [[ $maven == "1" ]];then
+  install_maven
+  fi
   check_result
-  echo "python-$version 安装完毕 "
+  echo "java-$version 安装完毕 "
 }
 main
 
