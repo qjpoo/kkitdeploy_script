@@ -1,0 +1,18 @@
+version: '3'
+services:   
+   kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    hostname: kafka
+    restart: always
+    ports:
+      - "9092:9092"
+      - "7203:7203"
+    networks:
+         extnetwork:
+networks:
+   extnetwork:
+      ipam:
+         config:
+         - subnet: 172.24.0.0/16
+           gateway: 172.24.0.1

@@ -1,0 +1,18 @@
+version: '3'
+services:   
+   zookeeper:
+    image: zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    hostname: zookeeper:
+    ports:
+      - "2181:2181"
+    networks:
+     extnetwork: 
+     
+networks:
+   extnetwork:
+      ipam:
+         config:
+         - subnet: 172.24.0.0/16
+           gateway: 172.24.0.1
