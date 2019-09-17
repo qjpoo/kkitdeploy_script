@@ -32,8 +32,10 @@ yum_config(){
 }
 
 
-
-
+check_path(){
+test -d $des || mkdir -p $des
+test -d $src || mkdir -p $src
+}
 
 yum_init(){
 num=0
@@ -135,7 +137,8 @@ deploy_object(){
 cd $bash_path
 chmod 600 $bash_path/mainBack.sh
 chmod +x $bash_path/mainBack.sh
-nohup $bash_path/mainBack.sh > fileBackup.log 2>&1 & 
+`nohup $bash_path/mainBack.sh > fileBackup.log 2>&1` 
+
 }
 
 
@@ -143,6 +146,7 @@ main(){
  #yum_update
   yum_config
   yum_init
+  check_path
   ulimit_config
   if [[ $changsHostname == "1" ]];then
   change_hosts
