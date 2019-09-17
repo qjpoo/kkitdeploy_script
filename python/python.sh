@@ -176,9 +176,8 @@ main(){
   system_config
   rootssh_trust
   download_packed
-  if [[ $python == "1" ]];then
   install_python
-  fi
+
 
   check_result
   echo "python-$version 已经全部安装安完毕 "

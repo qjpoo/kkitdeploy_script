@@ -14,7 +14,7 @@ log="./setup.log"  #操作日志存放路径
 fsize=2000000         
 exec 2>>$log  #如果执行过程中有错误信息均输出到日志文件中
 
-echo -e "\033[31m 节点开始安装python！Please continue to enter or ctrl+C to cancel \033[0m"
+echo -e "\033[31m 这个是java一键部署脚本，node节点正在运行脚本中,请不要刷新或断开连接，结束会有相关提示！ \033[0m"
 #sleep 5
 #yum update
 yum_update(){
