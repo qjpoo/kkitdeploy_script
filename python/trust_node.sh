@@ -95,30 +95,14 @@ ipaddr=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)
 echo "$ipaddr"
 }
 
-#ssh trust
-rootssh_trust(){
-
-cd $bash_path
-for host in ${hostip[@]}
-do
-if [[ `get_localip` != $host ]];then
-
-if [[ ! -f /root/.ssh/id_rsa.pub ]];then
-expect ssh_trust_init.exp $root_passwd $host
-else
-expect ssh_trust_add.exp $root_passwd $host
-fi
-echo "remote machine root user succeed!!!!!!!!!!!!!!!! "
-fi
-done
-}
 
 download_packed(){
 cd $bash_path
 num=0
 while true ; do
 let num+=1
-wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
+echo "开始下载python安装包，您得等会。可能会很慢，您懂得！！"
+test -f Python-$version.tgz || wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
 if [[ $? -eq 0 ]] ; then
 echo "安装包下载完毕！！！"
 break;
@@ -137,34 +121,36 @@ echo "开始安装python，您得等会。编译非常慢！！"
 cd $bash_path
 test -d /usr/local/python3 || mkdir -p /usr/local/python3
 tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
-make && make install 
-rm -rf /usr/local/python3/bin/python3
-rm -rf /usr/local/python3/bin/pip3
+make && make install
+rm -rf /usr/bin/python3
+rm -rf /usr/bin/pip3
 ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
 ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
+echo "python-$version 安装完毕 "
 }
 
 check_result(){
-which python3
-pip3 -V
-python3 -V
+#which python3
+/usr/bin/pip3 -V
+/usr/bin/python3 -V
 }
 
 main(){
  #yum_update
- yum_config
- yum_init
- ssh_config
- iptables_config
- system_config
- #ulimit_config
-
-if [[ $bothway == "1" ]];then
- rootssh_trust
-fi
-download_packed
-install_python
-# check_result
+  yum_config
+  yum_init
+  ssh_config
+  iptables_config
+  system_config
+  download_packed
+  if [[ $python == "1" ]];then
+  install_python
+  fi
+  
+  check_result
+  
+  echo "python-$version 安装完毕 "
 }
+
 main > .setup.log 2>&1
 

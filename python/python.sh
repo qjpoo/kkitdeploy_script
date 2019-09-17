@@ -13,7 +13,7 @@ fi
 #fsize=2000000
 #exec 2>>$log  #如果执行过程中有错误信息均输出到日志文件中
 
-echo -e "\033[31m 这个是服务器互信脚本！欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！Please continue to enter or ctrl+C to cancel \033[0m"
+echo -e "\033[31m 欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！Please continue to enter or ctrl+C to cancel \033[0m"
 #sleep 5
 #yum update
 yum_update(){
@@ -102,22 +102,6 @@ echo "$ipaddr"
 }
 
 
-change_hosts(){
-cd $bash_path
-num=0
-for host in ${hostip[@]}
-do
-let num+=1
-if [[ $host == `get_localip` ]];then
-`hostnamectl set-hostname $hostname$num`
-grep "$host" /etc/hosts || echo $host `hostname` >> /etc/hosts
-else
-grep "$host" /etc/hosts || echo $host $hostname$num >> /etc/hosts
-fi
-done
-}
-
-
 rootssh_trust(){
 cd $bash_path
 num=0
@@ -133,7 +117,8 @@ else
 echo '###########add key'
 expect ssh_trust_add.exp $root_passwd $host
 fi
-scp base.config hwclock_ntp.sh python_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp root@$host:/root && scp /etc/hosts root@$host:/etc/hosts && ssh root@$host "hostnamectl set-hostname $hostname$num" && ssh root@$host /root/hwclock_ntp.sh && ssh root@$host /root/python_trust_node.sh && ssh root@$host "rm -rf base.config hwclock_ntp.sh mutual_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp" && ssh root@$host "rm -rf base.config hwclock_ntp.sh python_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp"
+
+scp base.config trust_node.sh root@$host:/root && ssh root@$host /root/trust_node.sh && ssh root@$host "rm -rf base.config trust_node.sh " && ssh root@$host "rm -rf base.config trust_node.sh"
 
 fi
 done
@@ -175,10 +160,11 @@ echo "python-$version 安装完毕 "
 }
 
 check_result(){
-#which python3
+
 /usr/bin/pip3 -V
 /usr/bin/python3 -V
 }
+
 
 
 main(){
@@ -188,13 +174,14 @@ main(){
   ssh_config
   iptables_config
   system_config
-#  ulimit_config
-  change_hosts
   rootssh_trust
   download_packed
+  if [[ $python == "1" ]];then
   install_python
+  fi
+
   check_result
-  echo "python-$version 安装完毕 "
+  echo "python-$version 已经全部安装安完毕 "
 }
 main
 

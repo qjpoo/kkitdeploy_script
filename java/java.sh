@@ -13,7 +13,7 @@ fi
 #fsize=2000000
 #exec 2>>$log  #如果执行过程中有错误信息均输出到日志文件中
 
-echo -e "\033[31m 这个是服务器互信脚本！欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！Please continue to enter or ctrl+C to cancel \033[0m"
+echo -e "\033[31m 欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！Please continue to enter or ctrl+C to cancel \033[0m"
 #sleep 5
 #yum update
 yum_update(){
@@ -102,22 +102,6 @@ echo "$ipaddr"
 }
 
 
-change_hosts(){
-cd $bash_path
-num=0
-for host in ${hostip[@]}
-do
-let num+=1
-if [[ $host == `get_localip` ]];then
-`hostnamectl set-hostname $hostname$num`
-grep "$host" /etc/hosts || echo $host `hostname` >> /etc/hosts
-else
-grep "$host" /etc/hosts || echo $host $hostname$num >> /etc/hosts
-fi
-done
-}
-
-
 rootssh_trust(){
 cd $bash_path
 num=0
@@ -133,39 +117,25 @@ else
 echo '###########add key'
 expect ssh_trust_add.exp $root_passwd $host
 fi
-scp base.config hwclock_ntp.sh trust_node.sh ssh_trust_init.exp ssh_trust_add.exp root@$host:/root && scp /etc/hosts root@$host:/etc/hosts && ssh root@$host "hostnamectl set-hostname $hostname$num" && ssh root@$host /root/hwclock_ntp.sh && ssh root@$host /root/trust_node.sh && ssh root@$host "rm -rf base.config hwclock_ntp.sh mutual_trust_node.sh ssh_trust_init.exp ssh_trust_add.exp" && ssh root@$host "rm -rf base.config hwclock_ntp.sh trust_node.sh ssh_trust_init.exp ssh_trust_add.exp"
+
+scp base.config trust_node.sh root@$host:/root && ssh root@$host /root/trust_node.sh && ssh root@$host "rm -rf base.config trust_node.sh " && ssh root@$host "rm -rf base.config trust_node.sh"
 
 fi
 done
 }
 
 
-
-download_packed(){
-cd $bash_path
-num=0
-while true ; do
-let num+=1
-echo "开始下载python安装包，您得等会。可能会很慢，您懂得！！"
-test -f Python-$version.tgz || wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
-if [[ $? -eq 0 ]] ; then
-echo "安装包下载完毕！！！"
-break;
-else
-if [[ num -gt 3 ]];then
-echo "你登录 "$masterip" 瞅瞅咋回事？一直无法下载安装包"
-break
-fi
-echo "FK!~没成功？哥再来一次！！"
-fi
-done
-}
 
 install_java(){
-echo "开始安装java，您得等会。编译非常慢！！"
 cd $bash_path
+java -version
+if [[ $? -eq 0 ]];then
+echo "java-$version 安装完毕 "
+else
 yum -y install java-$version-openjdk*
 echo "java-$version 安装完毕 "
+fi
+
 }
 
 install_maven(){
@@ -173,18 +143,22 @@ test -d /usr/local/maven3
 if [[ $? -eq 0 ]];then
 echo "mvn已经安装完毕!!!"
 else
-wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar zxf apache-maven-3.1.1-bin.tar.gz && mv apache-maven-3.1.1 /usr/local/maven3
-  cat >> /etc/profile << EOF
-    export M2_HOME=/usr/local/maven3
-    export PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
+wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz && tar zxf apache-maven-3.6.0-bin.tar.gz && mv apache-maven-3.6.0 /usr/local/maven3
+grep "M2_HOME" /etc/profile
+if [[ $? -eq 0 ]];then
+echo "M2_HOME 环境变量配置完毕"
+else
+cat >> /etc/profile << EOF
+export M2_HOME=/usr/local/maven3
+export PATH=$PATH:/usr/local/maven3/bin
 EOF
 source /etc/profile
 mvn -v
 fi
+fi
 }
 
 check_result(){
-#which python3
 `java -version`
 }
 
@@ -196,8 +170,6 @@ main(){
   ssh_config
   iptables_config
   system_config
-#  ulimit_config
-  change_hosts
   rootssh_trust
   download_packed
   if [[ $java == "1" ]];then
@@ -207,7 +179,7 @@ main(){
   install_maven
   fi
   check_result
-  echo "java-$version 安装完毕 "
+  echo "java-$version 已经全部安装安完毕 "
 }
 main
 
