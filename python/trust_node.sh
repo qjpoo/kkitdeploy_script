@@ -122,18 +122,19 @@ cd $bash_path
 test -d /usr/local/python3 || mkdir -p /usr/local/python3
 tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
 make && make install
+echo "python-$version 安装完毕 "
 rm -rf /usr/bin/python3
 rm -rf /usr/bin/pip3
 ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
 ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
-echo "python-$version 安装完毕 "
+
 }
 
 check_result(){
-
 /usr/bin/pip3 -V
 /usr/bin/python3 -V
 }
+
 
 main(){
  #yum_update

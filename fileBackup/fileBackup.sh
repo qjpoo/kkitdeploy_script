@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #b8_yang@163.com
-#. /etc/profile
+#source ./base.config
 bash_path=$(cd "$(dirname "$0")";pwd)
 source $bash_path/base.config
 
@@ -9,30 +9,37 @@ if [[ "$(whoami)" != "root" ]]; then
 	exit 1
 fi
 
-#log="$bash_path/setup.log"  #操作日志存放路径
+#log="./setup.log"  #操作日志存放路径
 #fsize=2000000
 #exec 2>>$log  #如果执行过程中有错误信息均输出到日志文件中
 
-echo -e "\033[31m 欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！Please continue to enter or ctrl+C to cancel \033[0m"
-#sleep 5
+echo -e "\033[31m 欢迎关注我的个人公众号“devops的那些事”获得更多实用工具！ \033[0m"
+sleep 5
 #yum update
 yum_update(){
 	yum update -y
 }
 #configure yum source
 yum_config(){
+
   yum install wget epel-release -y
+  
   if [[ $aliyun == "1" ]];then
   test -d /etc/yum.repos.d/bak/ || yum install wget epel-release -y && cd /etc/yum.repos.d/ && mkdir bak && mv -f *.repo bak/ && wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo && wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo && yum clean all && yum makecache
+
   fi
+  
 }
+
+
+
+
 
 yum_init(){
 num=0
 while true ; do
 let num+=1
-yum -y groupinstall "Development tools"
-yum -y install iotop iftop yum-utils net-tools rsync git lrzsz expect gcc gcc-c++ make cmake libxml2-devel openssl-devel curl curl-devel unzip sudo ntp libaio-devel wget vim ncurses-devel autoconf automake zlib-devel  python-devel bash-completion zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+yum -y install iotop iftop yum-utils net-tools rsync git lrzsz expect gcc gcc-c++ make cmake libxml2-devel openssl-devel curl curl-devel unzip sudo ntp libaio-devel wget vim ncurses-devel autoconf automake zlib-devel  python-devel bash-completion inotify-tools 
 if [[ $? -eq 0 ]] ; then
 echo "初始化安装环境配置完成！！！"
 break;
@@ -48,17 +55,30 @@ done
 
 #firewalld
 iptables_config(){
+if [[ `ps -ef | grep firewalld |wc -l` -gt 1 ]];then
   systemctl stop firewalld.service
   systemctl disable firewalld.service
+  echo "防火墙我关了奥！！！"
+fi
 #  iptables -P FORWARD ACCEPT
 }
 #system config
 system_config(){
+grep "SELINUX=disabled" /etc/selinux/config
+if [[ $? -eq 0 ]];then
+  echo "SELINUX 已经禁用！！"
+else
   sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
   setenforce 0
+  echo "SELINUX 已经禁用！！"
+fi
+
+if [[ `ps -ef | grep chrony |wc -l` -eq 1 ]];then
   timedatectl set-local-rtc 1 && timedatectl set-timezone Asia/Shanghai
   yum -y install chrony && systemctl start chronyd.service && systemctl enable chronyd.service
   systemctl restart chronyd.service
+  echo "时钟同步chrony服务安装完毕！！"
+fi
 }
 
 
@@ -78,6 +98,7 @@ else
 EOF
   cat >> /etc/sysctl.conf << EOF
     kernel.pid_max=4194303
+    vm.swappiness = 0
 EOF
 sysctl -p
 echo "内核参数调整完毕！！！"
@@ -102,83 +123,32 @@ echo "$ipaddr"
 }
 
 
-rootssh_trust(){
+change_hosts(){
 cd $bash_path
-num=0
-for host in ${hostip[@]}
-do
-let num+=1
-if [[ `get_localip` != $host ]];then
-
-if [[ ! -f /root/.ssh/id_rsa.pub ]];then
-echo '###########init key'
-expect ssh_trust_init.exp $root_passwd $host
-else
-echo '###########add key'
-expect ssh_trust_add.exp $root_passwd $host
-fi
-
-scp base.config trust_node.sh root@$host:/root && ssh root@$host /root/trust_node.sh && ssh root@$host "rm -rf base.config trust_node.sh " && ssh root@$host "rm -rf base.config trust_node.sh"
-
-fi
-done
+`hostnamectl set-hostname $hostname`
+echo $masterip `hostname` >> /etc/hosts
 }
 
 
 
-download_packed(){
+deploy_object(){
 cd $bash_path
-num=0
-while true ; do
-let num+=1
-echo "开始下载python安装包，您得等会。可能会很慢，您懂得！！"
-test -f Python-$version.tgz || wget https://www.python.org/ftp/python/$version/Python-$version.tgz 
-if [[ $? -eq 0 ]] ; then
-echo "安装包下载完毕！！！"
-break;
-else
-if [[ num -gt 3 ]];then
-echo "你登录 "$masterip" 瞅瞅咋回事？一直无法下载安装包"
-break
-fi
-echo "FK!~没成功？哥再来一次！！"
-fi
-done
+chmod 600 $bash_path/mainBack.sh
+chmod +x $bash_path/mainBack.sh
+nohup $bash_path/mainBack.sh > fileBackup.log 2>&1 & 
 }
-
-install_python(){
-echo "开始安装python，您得等会。编译非常慢！！"
-cd $bash_path
-test -d /usr/local/python3 || mkdir -p /usr/local/python3
-tar xf ./Python-$version.tgz && cd ./Python-$version && ./configure --prefix=/usr/local/python3
-make && make install
-echo "python-$version 安装完毕 "
-rm -rf /usr/bin/python3
-rm -rf /usr/bin/pip3
-ln -sv /usr/local/python3/bin/python3 /usr/bin/python3
-ln -sv /usr/local/python3/bin/pip3 /usr/bin/pip3
-
-}
-
-check_result(){
-/usr/bin/pip3 -V
-/usr/bin/python3 -V
-}
-
 
 
 main(){
  #yum_update
   yum_config
   yum_init
-  ssh_config
-  iptables_config
-  system_config
-  rootssh_trust
-  download_packed
-  install_python
-  check_result
-  echo "python-$version 已经全部安装安完毕 "
+  ulimit_config
+  if [[ $changsHostname == "1" ]];then
+  change_hosts
+  fi
+  deploy_object
+  echo "已经完毕，请登录相关服务器验收！"
+    
 }
 main
-
