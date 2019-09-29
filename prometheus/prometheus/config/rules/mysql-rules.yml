@@ -1,0 +1,22 @@
+groups:
+  - name: SiteDown
+    rules:
+    - alert: 'MySql离线监控告警'
+      # 如果 prometheus 抓取到的mysql_up为0时，则表示监控的mysql已经是离线状态
+      # up{instance="k8s.dev-share.top:9104",job="mysql"} 这个语法是在 prometheus web页面中--> Graph 里面查到的，这个说法是可以获取到被监控的mysql在线的数据; 等于0为离线
+      expr: up{instance="k8s.dev-share.top:9104",job="mysql"} == 0
+      #for: 30s
+      for: 5s
+      annotations:
+        summary: "MySql离线监控告警 : {{.instance}}"
+        description: "MySql离线监控告警 : {{.instance}}"
+        custom: "mysql"
+
+    - alert: 'Prometheus 离线监控告警'
+      # 等于0时，将触发告警
+      expr: up{instance="k8s.dev-share.top:9090",job="prometheus"} == 0
+      for: 30s
+      annotations:
+        summary: "Prometheus 离线监控告警 : {{.instance}}"
+        description: "Prometheus 离线监控告警 : {{.instance}}"
+        custom: "prometheus"

@@ -1,0 +1,40 @@
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: '8line-monitor'
+
+# 普罗米修斯 规则文件
+rule_files:
+  - "rules/*.yml"
+
+# prometheus自身的Alert功能是根据我们配置的 规则文件 进行触发的，但是它并没有告警发邮件的功能，发送邮件的这件事儿是由 Alertmanager来做的
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "k8s.dev-share.top:9093"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label \`job=<job_name>\` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ['k8s.dev-share.top:9090']
+
+  # 后期追加mysql监控
+  - job_name: 'uat-mysql'
+    static_configs:
+      - targets: ['k8s.dev-share.top:9104']
+
+  # 后期追加机器监控
+  - job_name: 'node-monitor'
+    static_configs:
+      # 因为阿里云有安全组策略，所以这里使用了外网域名
+      - targets: ['k8s.dev-share.top:9100']
