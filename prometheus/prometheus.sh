@@ -178,6 +178,12 @@ cd $bash_path
 /usr/local/bin/docker-compose -f *.yml up -d
 }
 
+grantPrivilege(){
+cd $bash_path
+chmod -R 777 ./prometheus
+chmod -R 777 ./grafana
+}
+
 main(){
  #yum_update
   yum_config
@@ -192,6 +198,7 @@ main(){
   install_docker
   install_docker_compace
   config_docker
+  grantPrivilege
   deploy
   echo "mysql已经安装完毕，请登录相关服务器验收！"
 
