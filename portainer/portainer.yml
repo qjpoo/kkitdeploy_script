@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  portainer:
+    image: portainer
+    container_name: portainer
+    volumes:
+    - ./portainer_data:/data
+    - /etc/localtime:/etc/localtime:ro
+    ports:
+    - 9000:9000/tcp
+    restart: always
+
+    
