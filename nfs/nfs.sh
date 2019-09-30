@@ -179,7 +179,10 @@ test -d $nfs_path || mkdir -p $nfs_path
 chmod 755 $nfs_path
 echo $nfs_path $permission >> /etc/exports
 exportfs -rv
-
+systemctl start rpcbind
+systemctl start nfs
+systemctl enable rpcbind
+systemctl enable nfs-server.service
 }
 
 main(){
