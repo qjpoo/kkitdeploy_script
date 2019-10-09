@@ -253,7 +253,7 @@ join_cluster(){
 
 main(){
  #yum_update
- yum_config
+# yum_config
  yum_init
  ssh_config
  iptables_config
