@@ -1,0 +1,11 @@
+version: '2'
+services:
+  svn:
+    image: garethflowers/svn-server 
+    container_name: svn
+    ports:
+      - "3690:3690"
+    restart: always
+    network_mode: "host"
+    volumes:
+      - /data/docker/subversion:/data/docker/svn/
