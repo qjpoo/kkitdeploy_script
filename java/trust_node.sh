@@ -113,7 +113,7 @@ test -d /usr/local/maven3
 if [[ $? -eq 0 ]];then
 echo "mvn已经安装完毕!!!"
 else
-wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz && tar zxf apache-maven-3.6.0-bin.tar.gz && mv apache-maven-3.6.0 /usr/local/maven3
+wget http://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz && tar zxf apache-maven-3.6.2-bin.tar.gz && mv apache-maven-3.6.2 /usr/local/maven3
 grep "M2_HOME" /etc/profile
 if [[ $? -eq 0 ]];then
 echo "M2_HOME 环境变量配置完毕"
@@ -138,8 +138,6 @@ main(){
   ssh_config
   iptables_config
   system_config
-
-  download_packed
   
   if [[ $java == "1" ]];then
   install_java
