@@ -1,0 +1,31 @@
+version: '3'
+services:
+  openldap:
+    image: osixia/openldap
+    privileged: true
+    hostname: 'openldap'
+    environment:
+      LDAP_ORGANISATION: "mylitboy"
+      LDAP_DOMAIN: "mylitboy.com"
+      LDAP_ADMIN_PASSWORD: "root123"
+    volumes:
+#      - ./container:/container/
+      - ./data/slapd/database:/var/lib/ldap
+      - ./data/slapd/config:/etc/ldap/slapd.d
+    ports:
+      - 389:389
+      - 636:636
+  phpldapadmin:
+    image: osixia/phpldapadmin
+    hostname: 'youe_pla'
+    ports:
+      #- 18004:80
+      - 18005:443
+    links:
+      - openldap
+    environment:
+      #PHPLDAPADMIN_HTTPS: false
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+
+    
+
