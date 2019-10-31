@@ -4,9 +4,10 @@ services:
     image: osixia/openldap
     privileged: true
     hostname: 'openldap'
+    restart: always
     environment:
-      LDAP_ORGANISATION: "mylitboy"
-      LDAP_DOMAIN: "mylitboy.com"
+      LDAP_ORGANISATION: "itboge"
+      LDAP_DOMAIN: "itboge.com"
       LDAP_ADMIN_PASSWORD: "root123"
     volumes:
 #      - ./container:/container/
@@ -18,9 +19,10 @@ services:
   phpldapadmin:
     image: osixia/phpldapadmin
     hostname: 'youe_pla'
+    restart: always
     ports:
       #- 18004:80
-      - 18005:443
+      - 18443:443
     links:
       - openldap
     environment:
